@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: sst
+  datasource:
+    url: jdbc:mysql://localhost:3306/sst
+    username: root
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
