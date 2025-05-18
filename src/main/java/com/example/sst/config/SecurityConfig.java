@@ -36,6 +36,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         matcher -> matcher
                                 .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/v1/auth/loginWithJWT").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(

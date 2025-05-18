@@ -22,10 +22,10 @@ public class AuthenticatedUser {
 
     public static Optional<AuthenticatedUser> create(String name, String email, List<Role> roles) {
         List<String> errors = new ArrayList<>();
-        if (StringUtils.hasText(name)) {
+        if (!StringUtils.hasText(name)) {
             errors.add("usernameが空です");
         }
-        if (StringUtils.hasText(email)) {
+        if (!StringUtils.hasText(email)) {
             errors.add("emailが空です");
         }
         if (roles == null || roles.isEmpty()) {

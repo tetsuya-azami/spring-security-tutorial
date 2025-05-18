@@ -1,5 +1,6 @@
 package com.example.sst.presentation.authentication;
 
+import com.example.sst.exception.TokenAuthenticationException;
 import com.example.sst.usecase.AuthenticationParam;
 import com.example.sst.usecase.AuthenticationResult;
 import com.example.sst.usecase.LoginUsecase;
@@ -49,7 +50,26 @@ public class AuthController {
         }
 
         log.info("Login Success!");
-        return ResponseEntity.ok(new LoginResponse.Success(((AuthenticationResult.Success) result).token().value()));
+        return ResponseEntity.ok(new LoginResponse.Success(((AuthenticationResult.Success) result).opaqueToken().value()));
+    }
+
+    @PreAuthorize("isAnonymous()")
+    @PostMapping("/loginWithJWT")
+    public ResponseEntity<LoginResponse> loginWithJWT(@RequestBody LoginRequest request) throws TokenAuthenticationException {
+        log.info("Connection Log: {}", request);
+
+        AuthenticationParam.Result paramResult = AuthenticationParam.create(request.email(), request.password());
+
+        if (paramResult instanceof AuthenticationParam.Result.Failure failure) {
+            log.info("Login Param Failure: {}", failure);
+            return ResponseEntity.badRequest()
+                    .body(new LoginResponse.Failure("INVALID_REQUEST", failure.messages().toString()));
+        }
+
+        String JWTToken = loginUsecase.executeJWTLogin(((AuthenticationParam.Result.Success) paramResult).param());
+
+        log.info("Login Success!");
+        return ResponseEntity.ok(new LoginResponse.Success(JWTToken));
     }
 
     @GetMapping("/process")
