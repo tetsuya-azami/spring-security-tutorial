@@ -39,15 +39,14 @@ public class SecurityAuthenticationFilter extends OncePerRequestFilter {
         }
 
         Optional<Authentication> authenticatedUserOpt = authUserCacheRepository.get(Token.reconstruct(authorizationToken));
-        if (authenticatedUserOpt.isPresent()) {
-            Authentication authentication = authenticatedUserOpt.get();
-
-            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-            securityContext.setAuthentication(authentication);
-            SecurityContextHolder.setContext(securityContext);
-            filterChain.doFilter(request, response);
-        } else {
+        if (authenticatedUserOpt.isEmpty()) {
             throw new TokenAuthenticationException("認証情報が不正です。");
         }
+
+        Authentication authentication = authenticatedUserOpt.get();
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        securityContext.setAuthentication(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        filterChain.doFilter(request, response);
     }
 }
