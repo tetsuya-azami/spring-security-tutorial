@@ -37,7 +37,7 @@ public class AuthUsecase {
                 .map(UserAuthenticationData::getRoleName)
                 .map(Role::fromString)
                 .toList();
-        
+
         if (roleOpts.stream().anyMatch(Optional::isEmpty)) {
             return new AuthenticationResult.Failure(AuthenticationErrorDetailCode.ROLE_INVALID, "サーバーエラーです。");
         }
@@ -59,5 +59,9 @@ public class AuthUsecase {
         authUserCacheRepository.save(token, authenticatedUser);
 
         return new AuthenticationResult.Success(token);
+    }
+
+    public void logout(String token) {
+        authUserCacheRepository.delete(Token.reconstruct(token));
     }
 }

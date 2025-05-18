@@ -19,6 +19,10 @@ public class AuthUserCacheRepository {
         if (token == null || authenticatedUser == null) {
             throw new IllegalArgumentException("トークンおよび認証ユーザはnullではいけません");
         }
+        if (authUserMap.containsKey(token)) {
+            return;
+        }
+        
         authUserMap.put(token, new UserAuthentication(authenticatedUser));
     }
 
@@ -26,7 +30,7 @@ public class AuthUserCacheRepository {
         if (token == null) {
             return Optional.empty();
         }
-        return Optional.of(authUserMap.get(token));
+        return Optional.ofNullable(authUserMap.get(token));
     }
 
     public void delete(Token token) {
