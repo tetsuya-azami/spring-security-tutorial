@@ -1,8 +1,8 @@
 package com.example.sst.presentation.authentication;
 
-import com.example.sst.usecase.AuthUsecase;
 import com.example.sst.usecase.AuthenticationParam;
 import com.example.sst.usecase.AuthenticationResult;
+import com.example.sst.usecase.LoginUsecase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
-    private final AuthUsecase authUsecase;
+    private final LoginUsecase loginUsecase;
 
     @PreAuthorize("isAnonymous()")
     @PostMapping("/login")
@@ -30,7 +30,7 @@ public class AuthController {
                     .body(new LoginResponse.Failure("INVALID_REQUEST", failure.messages().toString()));
         }
 
-        AuthenticationResult result = authUsecase.login(((AuthenticationParam.Result.Success) paramResult).param());
+        AuthenticationResult result = loginUsecase.execute(((AuthenticationParam.Result.Success) paramResult).param());
 
         if (result instanceof AuthenticationResult.Failure failure) {
             log.info("Login Failure: {}", failure);
@@ -57,7 +57,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public String logout(@RequestHeader("Authorization") String token) {
-        authUsecase.logout(token);
+        loginUsecase.logout(token);
         return "logout";
     }
 }

@@ -16,13 +16,13 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class AuthUsecase {
+public class LoginUsecase {
     private final UserMapper userMapper;
     private final AuthUserCacheRepository authUserCacheRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserDataRegister userDataRegister;
 
-    public AuthenticationResult login(AuthenticationParam param) {
+    public AuthenticationResult execute(AuthenticationParam param) {
         userDataRegister.insertUserIfNotExists();
 
         // 本来Dataがusecaseに入るのは良くないが、今回は簡易的に実装するためにこのまま
