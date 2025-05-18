@@ -5,6 +5,8 @@ import com.example.sst.usecase.AuthenticationParam;
 import com.example.sst.usecase.AuthenticationResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,27 +19,35 @@ public class AuthController {
 
     @PreAuthorize("isAnonymous()")
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody LoginRequest request) {
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
         log.info("Connection Log: {}", request);
 
         AuthenticationParam.Result paramResult = AuthenticationParam.create(request.email(), request.password());
 
         if (paramResult instanceof AuthenticationParam.Result.Failure failure) {
             log.info("Login Param Failure: {}", failure);
-            return new LoginResponse.Failure("INVALID_REQUEST", failure.messages().toString());
+            return ResponseEntity.badRequest()
+                    .body(new LoginResponse.Failure("INVALID_REQUEST", failure.messages().toString()));
         }
 
         AuthenticationResult result = authUsecase.login(((AuthenticationParam.Result.Success) paramResult).param());
-        switch (result) {
-            case AuthenticationResult.Success success -> {
-                log.info("Login Success!");
-                return new LoginResponse.Success(success.token().value());
-            }
-            case AuthenticationResult.Failure failure -> {
-                log.info("Login Failure: {}", failure);
-                return new LoginResponse.Failure(failure.detailCode().name(), failure.message());
+
+        if (result instanceof AuthenticationResult.Failure failure) {
+            log.info("Login Failure: {}", failure);
+            switch (failure.detailCode()) {
+                case USER_NOT_FOUND -> {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(new LoginResponse.Failure(failure.detailCode().name(), failure.message()));
+                }
+                case ROLE_INVALID -> {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body(new LoginResponse.Failure(failure.detailCode().name(), failure.message()));
+                }
             }
         }
+
+        log.info("Login Success!");
+        return ResponseEntity.ok(new LoginResponse.Success(((AuthenticationResult.Success) result).token().value()));
     }
 
     @GetMapping("/process")
