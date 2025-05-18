@@ -2,7 +2,7 @@ package com.example.sst.config;
 
 import com.example.sst.exception.handler.ApplicationAccessDeniedHandler;
 import com.example.sst.exception.handler.ApplicationAuthenticationEntryPoint;
-import com.example.sst.filter.SecurityAuthenticationFilter;
+import com.example.sst.filter.OpaqueTokenAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +22,7 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
 public class SecurityConfig {
     private final ApplicationAuthenticationEntryPoint authenticationEntryPoint;
     private final ApplicationAccessDeniedHandler accessDeniedHandler;
-    private final SecurityAuthenticationFilter securityAuthenticationFilter;
+    private final OpaqueTokenAuthenticationFilter opaqueTokenAuthenticationFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -32,7 +32,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.addFilterBefore(securityAuthenticationFilter, AuthorizationFilter.class)
+        http.addFilterBefore(opaqueTokenAuthenticationFilter, AuthorizationFilter.class)
                 .authorizeHttpRequests(
                         matcher -> matcher
                                 .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()

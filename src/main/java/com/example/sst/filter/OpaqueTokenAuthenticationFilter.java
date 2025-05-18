@@ -23,7 +23,7 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class SecurityAuthenticationFilter extends OncePerRequestFilter {
+public class OpaqueTokenAuthenticationFilter extends OncePerRequestFilter {
     private final AuthUserCacheRepository authUserCacheRepository;
 
     @Override
