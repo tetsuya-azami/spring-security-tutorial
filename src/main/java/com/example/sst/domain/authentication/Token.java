@@ -1,10 +1,12 @@
 package com.example.sst.domain.authentication;
 
 
+import lombok.EqualsAndHashCode;
 import org.springframework.util.StringUtils;
 
 import java.util.UUID;
 
+@EqualsAndHashCode
 public class Token {
     private final String value;
 
@@ -13,7 +15,7 @@ public class Token {
     }
 
     public static Token reconstruct(String value) {
-        if (StringUtils.hasText(value)) {
+        if (!StringUtils.hasText(value)) {
             throw new IllegalArgumentException("トークンの値は空ではいけません");
         }
         return new Token(value);
