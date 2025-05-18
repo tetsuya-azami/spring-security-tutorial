@@ -1,7 +1,7 @@
 package com.example.sst.filter;
 
 import com.example.sst.common.AuthConstants;
-import com.example.sst.domain.authentication.Token;
+import com.example.sst.domain.authentication.OpaqueToken;
 import com.example.sst.exception.TokenAuthenticationException;
 import com.example.sst.infrastructure.repository.AuthUserCacheRepository;
 import jakarta.servlet.FilterChain;
@@ -38,7 +38,7 @@ public class SecurityAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        Optional<Authentication> authenticatedUserOpt = authUserCacheRepository.get(Token.reconstruct(authorizationToken));
+        Optional<Authentication> authenticatedUserOpt = authUserCacheRepository.get(OpaqueToken.reconstruct(authorizationToken));
         if (authenticatedUserOpt.isEmpty()) {
             throw new TokenAuthenticationException("認証情報が不正です。");
         }

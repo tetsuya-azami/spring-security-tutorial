@@ -7,22 +7,22 @@ import org.springframework.util.StringUtils;
 import java.util.UUID;
 
 @EqualsAndHashCode
-public class Token {
+public class OpaqueToken {
     private final String value;
 
-    private Token(String value) {
+    private OpaqueToken(String value) {
         this.value = value;
     }
 
-    public static Token reconstruct(String value) {
+    public static OpaqueToken reconstruct(String value) {
         if (!StringUtils.hasText(value)) {
             throw new IllegalArgumentException("トークンの値は空ではいけません");
         }
-        return new Token(value);
+        return new OpaqueToken(value);
     }
 
-    public static Token create() {
-        return new Token(UUID.randomUUID().toString());
+    public static OpaqueToken create() {
+        return new OpaqueToken(UUID.randomUUID().toString());
     }
 
     public String value() {
