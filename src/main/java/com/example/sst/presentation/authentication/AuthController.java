@@ -3,6 +3,7 @@ package com.example.sst.presentation.authentication;
 import com.example.sst.usecase.AuthenticationParam;
 import com.example.sst.usecase.AuthenticationResult;
 import com.example.sst.usecase.LoginUsecase;
+import com.example.sst.usecase.LogoutUsecase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class AuthController {
     private final LoginUsecase loginUsecase;
+    private final LogoutUsecase logoutUsecase;
 
     @PreAuthorize("isAnonymous()")
     @PostMapping("/login")
@@ -57,7 +59,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public String logout(@RequestHeader("Authorization") String token) {
-        loginUsecase.logout(token);
+        logoutUsecase.logout(token);
         return "logout";
     }
 }

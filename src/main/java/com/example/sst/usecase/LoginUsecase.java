@@ -50,18 +50,18 @@ public class LoginUsecase {
             return new AuthenticationResult.Failure(AuthenticationErrorDetailCode.USER_NOT_FOUND, "ユーザが見つかりませんでした。");
         }
 
-        AuthenticatedUser authenticatedUser = new AuthenticatedUser(
+        Optional<AuthenticatedUser> authenticatedUserOpt = AuthenticatedUser.create(
                 userData.getUserName(),
                 userData.getEmail(),
                 roles
         );
+        if (authenticatedUserOpt.isEmpty()) {
+            return new AuthenticationResult.Failure(AuthenticationErrorDetailCode.USER_NOT_FOUND, "ユーザが見つかりませんでした。");
+        }
+
         Token token = Token.create();
-        authUserCacheRepository.save(token, authenticatedUser);
+        authUserCacheRepository.save(token, authenticatedUserOpt.get());
 
         return new AuthenticationResult.Success(token);
-    }
-
-    public void logout(String token) {
-        authUserCacheRepository.delete(Token.reconstruct(token));
     }
 }
