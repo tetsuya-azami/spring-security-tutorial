@@ -2,7 +2,8 @@ package com.example.sst.config;
 
 import com.example.sst.exception.handler.ApplicationAccessDeniedHandler;
 import com.example.sst.exception.handler.ApplicationAuthenticationEntryPoint;
-import com.example.sst.filter.JWTTokenAuthenticationFilter;
+import com.example.sst.filter.AuthenticationCreationFilter;
+import com.example.sst.filter.SecurityAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,9 +23,11 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
 public class SecurityConfig {
     private final ApplicationAuthenticationEntryPoint authenticationEntryPoint;
     private final ApplicationAccessDeniedHandler accessDeniedHandler;
+//    private final OpaqueTokenAuthenticationFilter opaqueTokenAuthenticationFilter;
+//    private final JWTTokenAuthenticationFilter jwtTokenAuthenticationFilter;
 
-    //    private final OpaqueTokenAuthenticationFilter opaqueTokenAuthenticationFilter;
-    private final JWTTokenAuthenticationFilter jwtTokenAuthenticationFilter;
+    private final AuthenticationCreationFilter authenticationCreationFilter;
+    private final SecurityAuthenticationFilter securityAuthenticationFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -33,8 +36,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-        http.addFilterBefore(jwtTokenAuthenticationFilter, AuthorizationFilter.class)
+        http.addFilterBefore(securityAuthenticationFilter, AuthorizationFilter.class)
+                .addFilterBefore(authenticationCreationFilter, SecurityAuthenticationFilter.class)
                 .authorizeHttpRequests(
                         matcher -> matcher
                                 .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()

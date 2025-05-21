@@ -1,6 +1,6 @@
 package com.example.sst.exception;
 
-import javax.security.sasl.AuthenticationException;
+import org.springframework.security.core.AuthenticationException;
 
 public class TokenAuthenticationException extends AuthenticationException {
     public TokenAuthenticationException(String message) {

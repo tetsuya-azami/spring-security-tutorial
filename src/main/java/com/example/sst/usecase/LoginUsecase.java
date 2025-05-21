@@ -1,5 +1,6 @@
 package com.example.sst.usecase;
 
+import com.example.sst.domain.authentication.AuthUserType;
 import com.example.sst.domain.authentication.AuthenticatedUser;
 import com.example.sst.domain.authentication.OpaqueToken;
 import com.example.sst.domain.authentication.Role;
@@ -56,7 +57,8 @@ public class LoginUsecase {
         Optional<AuthenticatedUser> authenticatedUserOpt = AuthenticatedUser.create(
                 userData.getUserName(),
                 userData.getEmail(),
-                roles
+                roles,
+                AuthUserType.APPLICATION
         );
         if (authenticatedUserOpt.isEmpty()) {
             return new AuthenticationResult.Failure(AuthenticationErrorDetailCode.USER_NOT_FOUND, "ユーザが見つかりませんでした。");
@@ -100,7 +102,8 @@ public class LoginUsecase {
         Optional<AuthenticatedUser> authenticatedUserOpt = AuthenticatedUser.create(
                 userData.getUserName(),
                 userData.getEmail(),
-                roles
+                roles,
+                AuthUserType.INTERNAL
         );
         if (authenticatedUserOpt.isEmpty()) {
             throw new TokenAuthenticationException("ユーザが見つかりませんでした。");
